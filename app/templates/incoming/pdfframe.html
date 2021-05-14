@@ -1,0 +1,70 @@
+<div class="col-md-7">
+    <iframe
+            src="static/js/viewer/web/viewer.html?file={{url_for('static',filename='uploads/Conclusion.pdf')}}"
+            width="650px"
+            height="800px"
+            style="border: none;"
+    ></iframe>
+</div>
+
+
+
+<div class="" role="tabpanel" data-example-id="togglable-tabs">
+                                                    <ul id="fileTab" class="nav nav-tabs bar_tabs" role="tablist">
+                                                        <li role="presentation" class="active"><a href="#tab_file" id="file-tab" role="tab" data-toggle="tab" aria-expanded="true">File</a>
+                                                        </li>
+                                                        <li role="presentation" class=""><a href="#tab_attachements" role="tab" id="attachements-tab" data-toggle="tab" aria-expanded="false">{{ letter.pj_thumbnails|length }} Attachements</a>
+                                                        </li>
+                                                    </ul>
+                                                    <div id="fileTabContent" class="tab-content">
+                                                        <div role="tabpanel" class="tab-pane fade active in" id="tab_file" aria-labelledby="file-tab">
+                                                            <div class="row">
+                                                                <div class="attachment col-md-4">
+                                                                    <h5>Courrier</h5>
+                                                                    <ul>
+                                                                        <li>
+                                                                            <a href="#" class="atch-thumb">
+                                                                                <img src="{{url_for('static',filename='uploads/Entrant/')}}{{'Courriers_' + letter.date_arrivee.strftime('%d-%m-%Y') + '/'}}{{letter.thumbnail}}"
+                                                                                     alt="img"
+                                                                                />
+                                                                            </a>
+                                                                            <div class="file-name">
+                                                                                {{ letter.fichier }}
+                                                                            </div>
+                                                                            <div class="links">
+                                                                                <a href="#">View</a> -
+                                                                                <a href="#">Download</a>
+                                                                            </div>
+                                                                        </li>
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div role="tabpanel" class="tab-pane fade" id="tab_attachements" aria-labelledby="attachements-tab">
+                                                            <div class="row">
+                                                                <div class="attachment col-md-8">
+                                                                    <h5><i class="fa fa-paperclip"></i> {{ letter.pj_thumbnails|length }} Pieces jointes</h5>
+                                                                    <ul>
+                                                                        {% for i in letter.pj_thumbnails %}
+                                                                            <li>
+                                                                              <a href="#" class="atch-thumb">
+                                                                                <img src="{{url_for('static',filename='uploads/Entrant/')}}{{'Courriers_' + letter.date_arrivee.strftime('%d-%m-%Y') + '/'}}{{i}}"
+                                                                                     alt="img"
+                                                                                />
+                                                                              </a>
+
+                                                                              <div class="file-name">
+                                                                               {{ i }}
+                                                                              </div>
+                                                                              <div class="links">
+                                                                                <a href="#">View</a> -
+                                                                                <a href="#">Download</a>
+                                                                              </div>
+                                                                            </li>
+                                                                        {% endfor %}
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>

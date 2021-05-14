@@ -1,0 +1,78 @@
+{% extends 'admin/master.html' %}
+
+{% block body %}
+  <h1>PANNEAU D'ADMINISTRATION</h1>
+
+  <div class="">
+            <div class="row top_tiles">
+                <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                    <div class="tile-stats">
+                        <div class="icon"><i class="fa fa-file-o"></i></div>
+                        <div class="count">{{documents}}</div>
+                        <h3>Documents</h3>
+                        <p>Total de documents archivés.</p>
+                    </div>
+                </div>
+                <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                    <div class="tile-stats">
+                        <div class="icon"><i class="fa fa-building-o"></i></div>
+                        <div class="count">{{sites}}</div>
+                        <h3>Sites</h3>
+                        <p>Total de sites enregistrés.</p>
+                    </div>
+                </div>
+                <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                    <div class="tile-stats">
+                        <div class="icon"><i class="fa fa-sitemap"></i></div>
+                        <div class="count">{{departements}}</div>
+                        <h3>Départements</h3>
+                        <p>Total de départements enregistrés.</p>
+                    </div>
+                </div>
+                <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                    <div class="tile-stats">
+                        <div class="icon"><i class="fa fa-tasks"></i></div>
+                        <div class="count">{{services}}</div>
+                        <h3>Services</h3>
+                        <p>Total de services enregistrés.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row top_tiles">
+                <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                    <div class="tile-stats">
+                        <div class="icon"><i class="fa fa-users"></i></div>
+                        <div class="count">{{agents}}</div>
+                        <h3>Agents</h3>
+                        <p>Total des agents.</p>
+                    </div>
+                </div>
+                <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                    <div class="tile-stats">
+                        <div class="icon"><i class="fa fa-address-card"></i></div>
+                        <div class="count">{{operateurs}}</div>
+                        <h3>Operateurs</h3>
+                        <p>Total des operateurs.</p>
+                    </div>
+                </div>
+                <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                    <div class="tile-stats">
+                        <div class="icon"><i class="fa fa-user"></i></div>
+                        <div class="count">{{users}}</div>
+                        <h3>Utilisateurs</h3>
+                        <p>Total des utilisateurs.</p>
+                    </div>
+                </div>
+                 <a href="{{ url_for('dashboard.index') }}">
+                    <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                        <div class="tile-stats">
+                            <div class="icon"><i class="fa fa-sign-out"></i></div>
+                            <div class="count"> Quitter </div>
+                            <h3>&nbsp;</h3>
+                            <p>&nbsp;</p>
+                        </div>
+                    </div>
+                 </a>
+            </div>
+  </div>
+{% endblock %}

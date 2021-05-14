@@ -1,0 +1,258 @@
+{% extends "base_site.html" %}
+
+{% block title %} Recherche {% endblock title %}
+
+{% block stylesheets %}
+    {{ super() }}
+    <link href="{{url_for('static',filename='css/jquery-ui.min.css')}}" rel="stylesheet">
+    <style>
+        .ui-autocomplete{
+            max-height: 600px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-right: 20px;
+        }
+        .red-circle{
+            background: #f00;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        .green-circle{
+            background: #0f0;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        .blue-circle{
+            background: #00f;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        .center-block{
+            float: none !important;
+            margin: auto;
+        }
+    </style>
+{% endblock stylesheets %}
+
+{% block content %}
+    <div class="right_col" role="main">
+        <div class="">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_panel">
+                    <div class="x_content">
+                        <h5>Recherche par index</h5>
+                        <form action='' method="POST" novalidate>
+                            {{ form.hidden_tag() }}
+                            <div class="col-md-2">
+                                {{ form.type.label }}
+                                {{ form.type(class_="form-control type") }}
+                                {% for error in form.type.errors %}
+                                     <span style="color: red;">[{{ error }}]</span>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-2">
+                                {{ form.emetteur.label }}
+                                {{ form.emetteur(class_="form-control emetteur") }}
+                                {% for error in form.emetteur.errors %}
+                                     <span style="color: red;">[{{ error }}]</span>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-2">
+                                {{ form.destinataire.label }}
+                                {{ form.destinataire(class_="form-control destinataire") }}
+                                {% for error in form.destinataire.errors %}
+                                     <span style="color: red;">[{{ error }}]</span>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-2">
+                                {{ form.date_depart.label }}
+                                {{ form.date_depart(class_="form-control date_depart") }}
+                                {% for error in form.date_depart.errors %}
+                                     <span style="color: red;">[{{ error }}]</span>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-2">
+                                <label>Statut</label>
+                                <select class="form-control" id="statut">
+                                    <option value="Tous">Tous</option>
+                                    <option value="T">Traite</option>
+                                    <option value="NT">Non Traite</option>
+                                </select>
+                            </div>
+                            <div class="mt-2 col-md-2">
+                                <label>&nbsp;</label>
+                                <button type="button" class="form-control btn btn-info valider" id="valider">Valider</button>
+                            </div>
+                        </form>
+                        <br>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="panel panel-headline">
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <button type="button" class="btn btn-success excel">EXCEL</button>
+                                <button type="button" class="btn btn-danger pdf">PDF</button>
+                                <table id="tableCourriers" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                                    <thead>
+                                        <tr>
+                                            <th> <small> N° </small></th>
+                                            <th> <small> Type </small></th>
+                                            <th> <small> Reference </small></th>
+                                            <th> <small> Objet </small></th>
+                                            <th> <small> Date Creation </small></th>
+                                            <th> <small> Date Arrivee </small></th>
+                                            <th> <small> Emetteur </small></th>
+                                            <th> <small> Destinataire </small></th>
+                                            <th> <small> En Copie </small></th>
+                                            <th> <small> </small></th>
+                                            <th> <small> Action </small></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            var t = $('#tableCourriers').DataTable({
+                initComplete: function(){
+                    var api = this.api();
+                    $('#tableCourriers_filter input')
+                        .off('.DT')
+                        .on('keyup.DT', function (e) {
+                              if (e.keyCode == 13) {
+                                  api.search(this.value).draw();
+                              }
+                        });
+                },
+                "columnDefs": [{
+                    "searchable": false,
+                    "orderable": false,
+                    "targets": 0
+                }],
+                //"order": [[ 1, "asc" ]],
+                "dom": 'rf<t><"clear">',
+                "pageLength": 100,
+                scrollY: 300,
+			    autoWidth: true,
+                //select: true,
+                "processing": true,
+                "serverSide": true,
+                "searchDelay": 2000,
+                language: {
+                    "sSearch": "Rechercher&nbsp;:",
+                    "sInfoEmpty": "Aucun r&eacute;sultat disponible",
+                    "sZeroRecords": "Aucun &eacute;l&eacute;ment &agrave; afficher",
+	                "sEmptyTable": "Aucune donn&eacute;e disponible dans le tableau"
+                },
+                "processing": true,
+                "serverSide": true,
+                searching: true,
+                "ajax": {
+                    type: "POST",
+                	url:"/_ajax_datatable_outgoing",
+                	data: function ( d ) {
+                	    var datatable = $('#tableCourriers').DataTable();
+                	    var currentPage = datatable.page.info().page;
+                	    d.page_num = currentPage;
+                	    d.type = $('#type').val();
+                	    d.emetteur = $('#emetteur').val();
+                	    d.destinataire = $('#destinataire').val();
+                	    d.statut = $('#statut').val();
+                	    d.date_depart = $('#date_depart').val();
+                        return {"args": JSON.stringify(d)};
+                    }
+                    //dataType: "json",
+                    //contentType: "application/json"
+                },
+                "columns":[
+                    {"data": "numero", "orderable": false},
+                    {"data": "type", "orderable": false},
+                    {"data": "reference", "orderable": false},
+                    {"data": "objet", "orderable": false},
+                    {"data": "date_creation", "orderable": false},
+                    {"data": "date_depart", "orderable": false},
+                    {"data": "emetteur", "orderable": false},
+                    {"data": "destinataire", "orderable": false},
+                    {"data": "copie", "orderable": false},
+                    {"data": "traitement", "orderable": false},
+                    {"data": "enregistrement", "orderable": false},
+                ],
+                "columnDefs": [
+                    {
+                        "targets": -1,
+                        "data": "traitement",
+                        "render": function ( data, type, full, meta ) {
+                            return '<button type="button" class="btn btn-info btn-xs details">Détails</button>';
+                        }
+                    },
+                    {
+                        "targets": -2,
+                        "data": "traitement",
+                        "render": function ( data, type, full, meta ) {
+                            console.log(data);
+                            if(data === true){
+                                return '<span class="badge bg-success">Traité</span>';
+                            }else{
+                                return '<div class="red-circle"></div>';
+                            }
+                        }
+                    }
+                ]
+            });
+
+            t.on('order.dt search.dt', function(){
+
+            }).draw();
+
+            $('#tableCourriers tbody').on( 'click', '.details', function () {
+                var data = t.row( $(this).parents('tr') ).data();
+                location.href = Flask.url_for("outgoing.outbox_letter", {reference: data['reference']});
+            });
+         });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            $('.valider').click(function(){
+                $('#tableDocument').DataTable().ajax.reload();
+            });
+
+            $('.datep').daterangepicker({
+                singleDatePicker: true,
+                showDropdowns: true,
+                locale: {
+                    format: 'DD/MM/YYYY'
+                },
+                autoUpdateInput: false,
+                //minYear: 1901,
+                //maxYear: parseInt(moment().format('YYYY'),10)
+            });
+
+            $('.datep').on('apply.daterangepicker', function(ev, picker) {
+                $(this).val(picker.startDate.format('DD/MM/YYYY'));
+            });
+        });
+    </script>
+
+{% endblock content %}
+
+{% block javascripts %}
+    {{ super() }}
+    <script src="{{url_for('static',filename='js/jquery-ui.min.js')}}"></script>
+{% endblock %}

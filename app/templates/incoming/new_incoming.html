@@ -1,0 +1,173 @@
+{% extends "base_site.html" %}
+
+{% block title %} Recherche {% endblock title %}
+
+{% block stylesheets %}
+    {{ super() }}
+    <link href="{{ url_for('static', filename='vendors/dropzone/dist/min/dropzone.min.css') }}" rel="stylesheet">
+    <link href="{{url_for('static',filename='css/jquery-ui.min.css')}}" rel="stylesheet">
+    <style>
+        .ui-autocomplete{
+            max-height: 600px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-right: 20px;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+{% endblock stylesheets %}
+
+{% block content %}
+    <div class="right_col" role="main">
+        <div class="">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_panel">
+                    <div class="x_content">
+                        <h4>Formulaire - Nouveau courrier entrant</h4>
+                        <form action='' enctype="multipart/form-data" method="POST" novalidate>
+                            {{ form.hidden_tag() }}
+                            <div class="col-md-2"></div>
+                            <div class="col-md-8">
+                                <div>
+                                {{ form.type.label }}
+                                {{ form.type(class_="form-control js-simple-select") }}
+                                {% for error in form.type.errors %}
+                                     <span style="color: red;">[{{ error }}]</span>
+                                {% endfor %}
+                                </div>
+                                <div>
+                                {{ form.reference.label }}
+                                {{ form.reference(class_="form-control") }}
+                                {% for error in form.reference.errors %}
+                                     <span style="color: red;">[{{ error }}]</span>
+                                {% endfor %}
+                                </div>
+
+                                <div>
+                                {{ form.objet.label }}
+                                {{ form.objet(class_="form-control") }}
+                                {% for error in form.objet.errors %}
+                                     <span style="color: red;">[{{ error }}]</span>
+                                {% endfor %}
+                                </div>
+
+                                {{ form.date_arrivee.label }}
+                                {{ form.date_arrivee(class_="form-control datep") }}
+                                {% for error in form.date_arrivee.errors %}
+                                     <span style="color: red;">[{{ error }}]</span>
+                                {% endfor %}
+
+                                {{ form.date_creation.label }}
+                                {{ form.date_creation(class_="form-control datep") }}
+                                {% for error in form.date_creation.errors %}
+                                     <span style="color: red;">[{{ error }}]</span>
+                                {% endfor %}
+
+                                {{ form.emetteur.label }}
+                                {{ form.emetteur(class_="form-control js-select-correspondant-ajax") }}
+                                {% for error in form.emetteur.errors %}
+                                     <span style="color: red;">[{{ error }}]</span>
+                                {% endfor %}
+
+                                {{ form.destinataire.label }}
+                                {{ form.destinataire(class_="form-control js-simple-select") }}
+                                {% for error in form.destinataire.errors %}
+                                     <span style="color: red;">[{{ error }}]</span>
+                                {% endfor %}
+
+                                {{ form.copie.label }}
+                                {{ form.copie(class_="form-control js-select-copie-tags", multiple="multiple") }}
+                                {% for error in form.copie.errors %}
+                                     <span style="color: red;">[{{ error }}]</span>
+                                {% endfor %}
+
+                                {{ form.fichier.label }}
+                                {{ form.fichier(class_="form-control") }}
+                                {% for error in form.fichier.errors %}
+                                     <span style="color: red;">[{{ error }}]</span>
+                                {% endfor %}
+
+                                <label>Pieces jointes</label>
+                                <div class="dropzone" id="firstDropzone"></div>
+                                <br />
+
+                                {{ form.liens.label }}
+                                {{ form.liens(class_="form-control js-select-reference-ajax") }}
+                                {% for error in form.liens.errors %}
+                                     <span style="color: red;">[{{ error }}]</span>
+                                {% endfor %}
+
+                                <label>&nbsp;</label>
+                                <button type="button" class="form-control btn btn-info valider" id="valider">Valider</button>
+                            </div>
+                            <div class="col-md-2"></div>
+                        </form>
+                        <br>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            //$('#firstDropzone').dropzone({
+            Dropzone.options.firstDropzone = {
+                url: Flask.url_for("incoming.new_incoming"),
+                autoProcessQueue: false,
+                uploadMultiple: true,
+                parallelUploads: 3,
+                maxFiles: 3,
+                MaxFilesize: 10,
+                thumbnailWidth: 60,
+                thumbnailHeight: 60,
+                acceptedFiles: 'image/*,application/pdf', //'application/pdf',
+                addRemoveLinks: true,
+                init: function(){
+                    dzClosure = this;
+                    document.getElementById("valider").addEventListener("click", function(e){
+                        if( $("form").valid() ){
+                            e.preventDefault();
+                            e.stopPropagation();
+                            dzClosure.processQueue();
+                        }
+                    });
+                    //console.log(this.files);
+
+                    this.on("sending", function(data, xhr, formData){
+                        $('form').find("input, select").each(function(){
+                            console.log("GOT IT");
+                            console.log($(this).attr("id"), $(this).val());
+                            formData.append($(this).attr("id"), $(this).val());
+                        });
+                        formData.append('fichier', $("#fichier").prop('files')[0]);
+                    });
+                }
+            }
+
+
+            // DATEPICKER
+            $('.datep').daterangepicker({
+                singleDatePicker: true,
+                showDropdowns: true,
+                locale: {
+                    format: 'DD/MM/YYYY'
+                },
+                autoUpdateInput: false,
+            });
+
+            $('.datep').on('apply.daterangepicker', function(ev, picker) {
+                $(this).val(picker.startDate.format('DD/MM/YYYY'));
+            });
+        });
+    </script>
+
+{% endblock content %}
+
+{% block javascripts %}
+    {{ super() }}
+    <script src="{{url_for('static',filename='js/jquery-ui.min.js')}}"></script>
+    <script src="{{ url_for('static', filename='vendors/dropzone/dist/min/dropzone.min.js') }}"></script>
+{% endblock %}

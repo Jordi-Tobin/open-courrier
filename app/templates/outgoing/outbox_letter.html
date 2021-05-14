@@ -1,0 +1,319 @@
+{% extends "base_site.html" %}
+
+{% block title %} Inbox {% endblock title %}
+
+{% block stylesheets %}
+    {{ super() }}
+    <link href="{{url_for('static',filename='css/jquery-ui.min.css')}}" rel="stylesheet">
+    <style>
+        .ui-autocomplete{
+            max-height: 600px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-right: 20px;
+        }
+        .modal-content {
+            max-width: 1000px;
+            max-height: 800px;
+            overflow-y: auto;
+        }
+        table.pj
+        .pdf-view{
+            white-space: nowrap;
+            width: auto !important;
+            table-layout: auto !important;
+        }
+    </style>
+{% endblock stylesheets %}
+
+{% block content %}
+    <div class="right_col" role="main">
+        <div class="">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2>Courier <small>{{ letter.reference }}</small></h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <div class="" role="tabpanel" data-example-id="togglable-tabs">
+                                <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
+                                    <li role="presentation" class="active"><a href="#tab_content1" id="detail-tab" role="tab" data-toggle="tab" aria-expanded="true">Details</a>
+                                    </li>
+                                    <li role="presentation" class=""><a href="#tab_content2" role="tab" id="liens-tab" data-toggle="tab" aria-expanded="false">Courriers Lies</a>
+                                    </li>
+                                    <li role="presentation" class=""><a href="#tab_content3" role="tab" id="comment-tab2" data-toggle="tab" aria-expanded="false">Commentaires</a>
+                                    </li>
+                                </ul>
+                                <div id="myTabContent" class="tab-content">
+                                    <div role="tabpanel" class="tab-pane fade active in" id="tab_content1" aria-labelledby="detail-tab">
+                                        <div class="row">
+                                            <div class="col-sm-5 mail_list_column">
+                                                <form action='' enctype="multipart/form-data" method="POST" novalidate>
+                                                    {{ form.hidden_tag() }}
+
+                                                    {{ form.type.label }}
+                                                    {{ form.type(class_="form-control js-simple-select") }}
+                                                    {% for error in form.type.errors %}
+                                                         <span style="color: red;">[{{ error }}]</span>
+                                                    {% endfor %}
+
+                                                    {{ form.reference.label }}
+                                                    {{ form.reference(class_="form-control", value=letter.reference) }}
+                                                    {% for error in form.reference.errors %}
+                                                         <span style="color: red;">[{{ error }}]</span>
+                                                    {% endfor %}
+
+                                                    {{ form.objet.label }}
+                                                    {{ form.objet(class_="form-control", value=letter.objet) }}
+                                                    {% for error in form.objet.errors %}
+                                                         <span style="color: red;">[{{ error }}]</span>
+                                                    {% endfor %}
+
+                                                    {{ form.date_depart.label }}
+                                                    {{ form.date_depart(class_="form-control datep", value=letter.date_depart.strftime('%d/%m/%Y')) }}
+                                                    {% for error in form.date_depart.errors %}
+                                                         <span style="color: red;">[{{ error }}]</span>
+                                                    {% endfor %}
+
+                                                    {{ form.date_creation.label }}
+                                                    {{ form.date_creation(class_="form-control datep", value=letter.date_creation.strftime('%d/%m/%Y')) }}
+                                                    {% for error in form.date_creation.errors %}
+                                                         <span style="color: red;">[{{ error }}]</span>
+                                                    {% endfor %}
+
+                                                    {{ form.emetteur.label }}
+                                                    {{ form.emetteur(class_="form-control js-simple-select") }}
+                                                    {% for error in form.emetteur.errors %}
+                                                         <span style="color: red;">[{{ error }}]</span>
+                                                    {% endfor %}
+
+                                                    {{ form.destinataire.label }}
+                                                    {{ form.destinataire(class_="form-control js-select-correspondant-ajax") }}
+                                                    {% for error in form.destinataire.errors %}
+                                                         <span style="color: red;">[{{ error }}]</span>
+                                                    {% endfor %}
+
+                                                    {{ form.copie.label }}
+                                                    <div class="control-group">
+                                                        <input id="" type="text" class="tags tags_1 form-control" value="{{ letter.copie }}" />
+                                                    </div>
+
+                                                    <label>&nbsp;</label><br/>
+                                                    <button class="btn btn-primary" type="button"><i class="fa fa-save"></i> Save changes</button>
+                                                </form>
+                                            </div>
+                                            <div class="col-sm-7 mail-view">
+                                                <iframe
+                                                    src="/static/js/viewer/web/viewer.html?file={{url_for('static', filename='uploads/Sortant/')}}{{letter.fichier}}"
+                                                    width="650px"
+                                                    height="500px"
+                                                    style="border: none;"
+                                                ></iframe>
+                                                <div class="row">
+                                                    <div class="attachment col-md-4">
+                                                        <h5>Courrier</h5>
+                                                        <ul>
+                                                            <li>
+                                                                <a href="#" class="atch-thumb">
+                                                                    <img src="{{url_for('static',filename='uploads/Sortant/')}}{{letter.thumbnail}}"
+                                                                         alt="img"
+                                                                    />
+                                                                </a>
+                                                                <div class="file-name">
+                                                                    {{ letter.fichier }}
+                                                                </div>
+                                                                <div class="links">
+                                                                    <a href="#">View</a> -
+                                                                    <a href="#">Download</a>
+                                                                </div>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                    <div class="attachment col-md-8">
+                                                        <h5><i class="fa fa-paperclip"></i> {{ letter.pj_thumbnails|length }} Pieces jointes</h5>
+                                                        <ul>
+                                                            {% for i in letter.pj_thumbnails %}
+                                                                <li>
+                                                                  <a href="#" class="atch-thumb">
+                                                                    <img src="{{url_for('static',filename='uploads/Sortant/')}}{{i}}"
+                                                                         alt="img"
+                                                                    />
+                                                                  </a>
+
+                                                                  <div class="file-name">
+                                                                   {{ i }}
+                                                                  </div>
+                                                                  <div class="links">
+                                                                    <a href="#">View</a> -
+                                                                    <a href="#">Download</a>
+                                                                  </div>
+                                                                </li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div role="tabpanel" class="tab-pane fade" id="tab_content2" aria-labelledby="liens-tab">
+                                        <div class="row">
+                                            <table class="data table table-striped no-margin">
+                                                <thead>
+                                                      <tr>
+                                                          <th>Reference</th>
+                                                          <th>Objet</th>
+                                                          <th>Date depart</th>
+                                                          <th>Emetteur</th>
+                                                          <th>Destinataire</th>
+                                                          <th>Fichier</th>
+                                                          <th>Action</th>
+                                                      </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for i in letter['liens'] %}
+                                                    <tr>
+                                                        <td>{{ i["reference"] }}</td>
+                                                        <td>{{ i["objet"] }}</td>
+                                                        <td>{{ i["enregistrement"].strftime('%d-%m-%Y') }}</td>
+                                                        <td>{{ i["emetteur"] }}</td>
+                                                        <td>{{ i["destinataire"] }}</td>
+                                                        <td>
+                                                            {% if i["courrier"] == "Entrant" %}
+                                                                <a href="#" class="atch-thumb">
+                                                                    <img src="{{url_for('static',filename='uploads/Entrant/')}}{{i['thumbnail']}}"
+                                                                         alt="img" height="80"
+                                                                    />
+                                                                </a>
+                                                            {% else %}
+                                                                <a href="#" class="atch-thumb">
+                                                                    <img src="{{url_for('static',filename='uploads/Sortant/')}}{{i['thumbnail']}}"
+                                                                         alt="img" height="80"
+                                                                    />
+                                                                </a>
+                                                            {% endif %}
+                                                        </td>
+                                                        <td class="vertical-align-mid">
+                                                            <div class="progress">
+                                                                <div class="progress-bar progress-bar-success" data-transitiongoal="35"></div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div role="tabpanel" class="tab-pane fade" id="tab_content3" aria-labelledby="comment-tab">
+                                        <div class="row">
+                                            <button id="compose" class="btn btn-sm btn-success" type="button">COMMENTER</button>
+                                            <ul id="messages" class="messages">
+                                                {% for i in letter['commentaires'] %}
+                                                    <li>
+                                                        <img src="/static/images/img.jpg" class="avatar" alt="Avatar">
+                                                        <div class="message_date">
+                                                            <h3 class="date text-info">{{ i["date_commentaire"].strftime('%d') }}</h3>
+                                                            <p class="month">{{ i["date_commentaire"].strftime('%m/%Y') }}</p>
+                                                        </div>
+                                                        <div class="message_wrapper">
+                                                            <h4 class="heading">{{ i["auteur"] }}</h4>
+                                                            <blockquote class="message">{{ i["texte"] }}</blockquote>
+                                                            <br />
+                                                            <div class="btn-group">
+                                                                <button class="btn btn-sm btn-info" type="button"  data-placement="left" data-toggle="tooltip" data-original-title="Edit"><i class="fa fa-edit"></i></button>
+                                                                <button class="btn btn-sm btn-danger" type="button" data-placement="right" data-toggle="tooltip" data-original-title="Delete"><i class="fa fa-trash-o"></i></button>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="compose col-md-6 col-xs-12">
+        <div class="compose-header">
+            Nouveau Commentaire
+            <button type="button" class="close compose-close">
+              <span>×</span>
+            </button>
+        </div>
+
+        <div class="compose-body">
+            <div id="alerts"></div>
+
+            <textarea class="resizable_textarea form-control comment" rows="5"></textarea>
+        </div>
+
+        <div class="compose-footer">
+            <button id="send" class="btn btn-sm btn-success" type="button">Send</button>
+        </div>
+    </div>
+    <!-- /compose -->
+
+<script>
+    $(document).ready(function() {
+        $('.js-select-copie-tags-x').select2({multiple: true, tags: true});
+
+        $('#send').click(function(){
+            if ($('.comment').val() !== ""){
+                $.getJSON($SCRIPT_ROOT + '/_add_comment_outbox', {
+                    reference: $('#reference').val(),
+                    comment: $('.comment').val(),
+                },
+                function(data) {
+                    console.log(data);
+                    let message = document.getElementById('messages');
+                    html = '<li>' +
+                        '<img src="/static/images/img.jpg" class="avatar" alt="Avatar">' +
+                        '<div class="message_date">' +
+                            '<h3 class="date text-info">' + moment(moment.now()).format("DD") + '</h3>'+
+                            '<p class="month">' + moment(moment.now()).format("MM/YYYY") + '</p>'+
+                        '</div>'+
+                        '<div class="message_wrapper">'+
+                            '<h4 class="heading">' + data["auteur"] + '</h4>'+
+                            '<blockquote class="message">' + data["texte"] + '</blockquote>'+
+                            '<br />'+
+                            '<div class="btn-group">'+
+                                '<button class="btn btn-sm btn-info" type="button"  data-placement="left" data-toggle="tooltip" data-original-title="Edit"><i class="fa fa-edit"></i></button>'+
+                                '<button class="btn btn-sm btn-danger" type="button" data-placement="right" data-toggle="tooltip" data-original-title="Delete"><i class="fa fa-trash-o"></i></button>'+
+                            '</div>'+
+                        '</div>'+
+                    '</li>';
+                    message.innerHTML += html;
+                    $('.comment').val("");
+                });
+            }
+            return false;
+        });
+
+        $('.datep').daterangepicker({
+            singleDatePicker: true,
+            showDropdowns: true,
+            locale: {
+                format: 'DD/MM/YYYY'
+            },
+            autoUpdateInput: false,
+            //minYear: 1901,
+            //maxYear: parseInt(moment().format('YYYY'),10)
+        });
+
+        $('.datep').on('apply.daterangepicker', function(ev, picker) {
+            $(this).val(picker.startDate.format('DD/MM/YYYY'));
+        });
+    });
+</script>
+{% endblock content %}
+
+{% block javascripts %}
+    {{ super() }}
+    <script src="{{url_for('static',filename='js/jquery-ui.min.js')}}"></script>
+{% endblock %}

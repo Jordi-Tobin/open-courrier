@@ -1,0 +1,536 @@
+{% extends "base_site.html" %}
+
+{% block title %} Tableau de bord {% endblock title %}
+
+{% block stylesheets %}
+  {{ super() }}
+  <style>
+      .year {
+        border: 2px solid red;
+        border-radius: 4px;
+      }
+      .chart-legend ul {
+        list-style: none;
+      }
+      .chart-legend ul li {
+        display: inline-block;
+        padding: 10px;
+      }
+      .chart-legend li span {
+        display: inline-block;
+        width: 24px;
+        height: 12px;
+        margin-right: 5px;
+      }
+  </style>
+{% endblock stylesheets %}
+
+{% block content %}
+    <div class="right_col" role="main">
+        <div class="">
+            <div class="row top_tiles">
+                <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                    <div class="tile-stats">
+                        <div class="icon"><i class="fa fa-envelope-o"></i></div>
+                        <div class="count">{{incoming}}</div>
+                        <h3>Incoming</h3>
+                        <p>Total incoming letters</p>
+                    </div>
+                </div>
+                <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                    <div class="tile-stats">
+                        <div class="icon"><i class="fa fa-send"></i></div>
+                        <div class="count">{{outgoing}}</div>
+                        <h3>Outgoing</h3>
+                        <p>Total outgoing letters</p>
+                    </div>
+                </div>
+                <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                    <div class="tile-stats">
+                        <div class="icon"><i class="fa fa-sitemap"></i></div>
+                        <div class="count">{{correspondants}}</div>
+                        <h3>Correspondent</h3>
+                        <p>Total registered correspondents</p>
+                    </div>
+                </div>
+                <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                    <div class="tile-stats">
+                        <div class="icon"><i class="fa fa-tasks"></i></div>
+                        <div class="count">{{services}}</div>
+                        <h3>Services</h3>
+                        <p>Total de services enregistrés.</p>
+                    </div>
+                </div>
+            </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <div class="x_panel">
+            <div class="x_title">
+              <h2>Flux mensuel des courriers</h2>
+              <div class="col-md-2 pull-right">
+                  <select class="form-control year" id="year">
+                     {% for y in years %}
+                        <option>{{y['_id']}}</option>
+                     {% endfor %}
+                  </select>
+              </div>
+              <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+              <div class="col-md-9 col-sm-12 col-xs-12">
+                <div style="width:100%;">
+                  <canvas id="canvas"></canvas>
+                  <div id="legends" class="chart-legend"></div>
+                </div>
+              </div>
+
+              <div class="col-md-3 col-sm-12 col-xs-12">
+                <div>
+                  <div class="x_title">
+                    <h2>Top Departements</h2>
+                    <div class="clearfix"></div>
+                  </div>
+                  <ul class="list-unstyled top_profiles scroll-view">
+                    {% for i in top_departements %}
+                      <li class="media event">
+                        <a class="pull-left border-aero profile_thumb">
+                          <i class="fa fa-sitemap aero"></i>
+                        </a>
+                        <div class="media-body">
+                          <a class="title" href="#">{{i['Departement']}}</a>
+                          <p><strong>{{i['Total']}}</strong> Documents </p>
+                          <p> <small>cette année</small></p>
+                        </div>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <div class="x_panel">
+            <div class="x_title">
+              <h2>Weekly Summary <small>Activity shares</small></h2>
+              <ul class="nav navbar-right panel_toolbox">
+                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </li>
+                <li class="dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="#">Settings 1</a>
+                    </li>
+                    <li><a href="#">Settings 2</a>
+                    </li>
+                  </ul>
+                </li>
+                <li><a class="close-link"><i class="fa fa-close"></i></a>
+                </li>
+              </ul>
+              <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+
+              <div class="row" style="border-bottom: 1px solid #E0E0E0; padding-bottom: 5px; margin-bottom: 5px;">
+                <div class="col-md-7" style="overflow:hidden;">
+                  <span class="sparkline_one" style="height: 160px; padding: 10px 25px;">
+                    <canvas width="200" height="60" style="display: inline-block; vertical-align: top; width: 94px; height: 30px;"></canvas>
+                  </span>
+                  <h4 style="margin:18px">Weekly sales progress</h4>
+                </div>
+
+                <div class="col-md-5">
+                  <div class="row" style="text-align: center;">
+                    <div class="col-md-4">
+                      <canvas class="canvasDoughnut" height="110" width="110" style="margin: 5px 10px 10px 0"></canvas>
+                      <h4 style="margin:0">Bounce Rates</h4>
+                    </div>
+                    <div class="col-md-4">
+                      <canvas class="canvasDoughnut" height="110" width="110" style="margin: 5px 10px 10px 0"></canvas>
+                      <h4 style="margin:0">New Traffic</h4>
+                    </div>
+                    <div class="col-md-4">
+                      <canvas class="canvasDoughnut" height="110" width="110" style="margin: 5px 10px 10px 0"></canvas>
+                      <h4 style="margin:0">Device Share</h4>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-4">
+          <div class="x_panel">
+            <div class="x_title">
+              <h2>Top Profiles <small>Sessions</small></h2>
+              <ul class="nav navbar-right panel_toolbox">
+                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </li>
+                <li class="dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="#">Settings 1</a>
+                    </li>
+                    <li><a href="#">Settings 2</a>
+                    </li>
+                  </ul>
+                </li>
+                <li><a class="close-link"><i class="fa fa-close"></i></a>
+                </li>
+              </ul>
+              <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+              <article class="media event">
+                <a class="pull-left date">
+                  <p class="month">April</p>
+                  <p class="day">23</p>
+                </a>
+                <div class="media-body">
+                  <a class="title" href="#">Item One Title</a>
+                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                </div>
+              </article>
+              <article class="media event">
+                <a class="pull-left date">
+                  <p class="month">April</p>
+                  <p class="day">23</p>
+                </a>
+                <div class="media-body">
+                  <a class="title" href="#">Item Two Title</a>
+                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                </div>
+              </article>
+              <article class="media event">
+                <a class="pull-left date">
+                  <p class="month">April</p>
+                  <p class="day">23</p>
+                </a>
+                <div class="media-body">
+                  <a class="title" href="#">Item Two Title</a>
+                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                </div>
+              </article>
+              <article class="media event">
+                <a class="pull-left date">
+                  <p class="month">April</p>
+                  <p class="day">23</p>
+                </a>
+                <div class="media-body">
+                  <a class="title" href="#">Item Two Title</a>
+                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                </div>
+              </article>
+              <article class="media event">
+                <a class="pull-left date">
+                  <p class="month">April</p>
+                  <p class="day">23</p>
+                </a>
+                <div class="media-body">
+                  <a class="title" href="#">Item Three Title</a>
+                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                </div>
+              </article>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="x_panel">
+            <div class="x_title">
+              <h2>Top Profiles <small>Sessions</small></h2>
+              <ul class="nav navbar-right panel_toolbox">
+                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </li>
+                <li class="dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="#">Settings 1</a>
+                    </li>
+                    <li><a href="#">Settings 2</a>
+                    </li>
+                  </ul>
+                </li>
+                <li><a class="close-link"><i class="fa fa-close"></i></a>
+                </li>
+              </ul>
+              <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+              <article class="media event">
+                <a class="pull-left date">
+                  <p class="month">April</p>
+                  <p class="day">23</p>
+                </a>
+                <div class="media-body">
+                  <a class="title" href="#">Item One Title</a>
+                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                </div>
+              </article>
+              <article class="media event">
+                <a class="pull-left date">
+                  <p class="month">April</p>
+                  <p class="day">23</p>
+                </a>
+                <div class="media-body">
+                  <a class="title" href="#">Item Two Title</a>
+                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                </div>
+              </article>
+              <article class="media event">
+                <a class="pull-left date">
+                  <p class="month">April</p>
+                  <p class="day">23</p>
+                </a>
+                <div class="media-body">
+                  <a class="title" href="#">Item Two Title</a>
+                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                </div>
+              </article>
+              <article class="media event">
+                <a class="pull-left date">
+                  <p class="month">April</p>
+                  <p class="day">23</p>
+                </a>
+                <div class="media-body">
+                  <a class="title" href="#">Item Two Title</a>
+                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                </div>
+              </article>
+              <article class="media event">
+                <a class="pull-left date">
+                  <p class="month">April</p>
+                  <p class="day">23</p>
+                </a>
+                <div class="media-body">
+                  <a class="title" href="#">Item Three Title</a>
+                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                </div>
+              </article>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="x_panel">
+            <div class="x_title">
+              <h2>Top Profiles <small>Sessions</small></h2>
+              <ul class="nav navbar-right panel_toolbox">
+                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </li>
+                <li class="dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="#">Settings 1</a>
+                    </li>
+                    <li><a href="#">Settings 2</a>
+                    </li>
+                  </ul>
+                </li>
+                <li><a class="close-link"><i class="fa fa-close"></i></a>
+                </li>
+              </ul>
+              <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+              <article class="media event">
+                <a class="pull-left date">
+                  <p class="month">April</p>
+                  <p class="day">23</p>
+                </a>
+                <div class="media-body">
+                  <a class="title" href="#">Item One Title</a>
+                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                </div>
+              </article>
+              <article class="media event">
+                <a class="pull-left date">
+                  <p class="month">April</p>
+                  <p class="day">23</p>
+                </a>
+                <div class="media-body">
+                  <a class="title" href="#">Item Two Title</a>
+                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                </div>
+              </article>
+              <article class="media event">
+                <a class="pull-left date">
+                  <p class="month">April</p>
+                  <p class="day">23</p>
+                </a>
+                <div class="media-body">
+                  <a class="title" href="#">Item Two Title</a>
+                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                </div>
+              </article>
+              <article class="media event">
+                <a class="pull-left date">
+                  <p class="month">April</p>
+                  <p class="day">23</p>
+                </a>
+                <div class="media-body">
+                  <a class="title" href="#">Item Two Title</a>
+                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                </div>
+              </article>
+              <article class="media event">
+                <a class="pull-left date">
+                  <p class="month">April</p>
+                  <p class="day">23</p>
+                </a>
+                <div class="media-body">
+                  <a class="title" href="#">Item Three Title</a>
+                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                </div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+   <script>
+     $(document).ready(function() {
+        var chartData = {
+			labels: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
+			datasets: [{
+			    type: 'bar',
+			    label: 'Incoming',
+				backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                borderColor: 'rgba(255, 206, 86, 1)',
+                data: [],
+				borderWidth: 2
+			},
+			{
+			    type: 'bar',
+			    label: 'Outgoing',
+				backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                data: [],
+				borderWidth: 2
+			}]
+		};
+
+		window.onload = function() {
+			var ctx = document.getElementById('canvas').getContext('2d');
+			window.myMixedChart = new Chart(ctx, {
+			    type: 'bar',
+				data: chartData,
+				options: {
+				    barValueSpacing: 20,
+					responsive: true,
+					tooltips: {
+					    mode: 'label',
+					    intersect: true
+					},
+					plugins: {
+                        legend: {
+                            display: true,
+                        }
+                    }
+				},
+				scales:{
+					xAxes:[{
+						display: true,
+						ticks: {
+                           autoSkip: false
+                        }
+					}],
+					yAxes:[{
+						display: true,
+						ticks:{
+							stepSize: 10,
+							stepValue: 10
+						}
+					}]
+				}
+			});
+			document.getElementById('legends').innerHTML = window.myMixedChart.generateLegend();
+		};
+
+		year.onchange = function(){
+            valeur = year.value;
+            $.getJSON($SCRIPT_ROOT + '/_stats',{
+                year: valeur,
+            },
+            function(data){
+                var ingoing = data.ingoing;
+                var outgoing = data.outgoing;
+                chartData.datasets.forEach(function(dataset) {
+                    dataset.data = [];
+                });
+
+                for(var i=0; i < ingoing.length; i++)
+                {
+                    console.log(chartData.datasets[0]);
+                    chartData.datasets[0].data.push(ingoing[i]['count']);
+                }
+
+                for(var i=0; i < outgoing.length; i++)
+                {
+                    console.log(chartData.datasets[0]);
+                    chartData.datasets[1].data.push(outgoing[i]['count']);
+                }
+
+                //window.myMixedChart.config.options.scales.yAxes[0].ticks.stepSize = 2000;
+                //window.myMixedChart.update();
+            });
+            return false;
+        }
+
+        $.getJSON($SCRIPT_ROOT + '/_stats',
+            function(data) {
+                var ingoing = data.ingoing;
+                var outgoing = data.outgoing;
+
+                for(var i=0; i < ingoing.length; i++)
+                {
+                    console.log(chartData.datasets[0]);
+                    chartData.datasets[0].data.push(ingoing[i]['count']);
+                }
+
+                for(var i=0; i < outgoing.length; i++)
+                {
+                    console.log(chartData.datasets[0]);
+                    chartData.datasets[1].data.push(outgoing[i]['count']);
+                }
+            });
+        return false;
+     });
+  </script>
+{% endblock content %}
+
+{% block javascripts %}
+  {{ super()}}
+  <!-- Chart.js -->
+  <script src="{{ url_for('static', filename='vendors/Chart.js/dist/Chart.min.js') }}"></script>
+  <!-- gauge.js -->
+  <script src="{{ url_for('static', filename='vendors/gauge.js/dist/gauge.min.js') }}"></script>
+  <!-- Skycons -->
+  <script src="{{ url_for('static', filename='vendors/skycons/skycons.js') }}"></script>
+  <!-- Flot -->
+  <script src="{{ url_for('static', filename='vendors/Flot/jquery.flot.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendors/Flot/jquery.flot.pie.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendors/Flot/jquery.flot.time.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendors/Flot/jquery.flot.stack.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendors/Flot/jquery.flot.resize.js') }}"></script>
+  <!-- Flot plugins -->
+  <script src="{{ url_for('static', filename='vendors/flot.orderbars/js/jquery.flot.orderBars.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendors/flot-spline/js/jquery.flot.spline.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendors/flot.curvedlines/curvedLines.js') }}"></script>
+  <!-- DateJS -->
+  <script src="{{ url_for('static', filename='vendors/DateJS/build/date.js') }}"></script>
+  <!-- JQVMap -->
+  <script src="{{ url_for('static', filename='vendors/jqvmap/dist/jquery.vmap.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendors/jqvmap/dist/maps/jquery.vmap.world.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendors/jqvmap/examples/js/jquery.vmap.sampledata.js') }}"></script>
+{% endblock javascripts %}

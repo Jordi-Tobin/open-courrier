@@ -1,0 +1,263 @@
+{% extends 'admin/model/create.html' %}
+
+{% block body %}
+
+    <div class="" role="tabpanel" data-example-id="togglable-tabs">
+        <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
+            <li role="presentation" class="">
+                <a href="{{ url_for('document.index_view') }}" id="liste-tab" role="tab" data-toggle="tab" aria-expanded="true">Liste</a>
+            </li>
+            <li role="presentation" class="active">
+                <a href="#creer" role="tab" id="creer-tab" data-toggle="tab" aria-expanded="false">Creer</a>
+            </li>
+        </ul>
+        <div id="myTabContent" class="tab-content">
+            <div role="tabpanel" class="tab-pane fade" id="liste" aria-labelledby="filiere-tab">
+            </div>
+            <div role="tabpanel" class="tab-pane fade active in" id="creer" aria-labelledby="creer-tab">
+
+                <form id="form_document" class="form-horizontal" action='' method="POST" novalidate>
+                    {{ form.hidden_tag() }}
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> {{ form.operateur.label }}</label>
+                        <div class="col-sm-10">
+                            {{ form.operateur(class_="form-control operateur") }}
+                            {% for error in form.operateur.errors %}
+                                 <span style="color: red;">[{{ error }}]</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> {{ form.libelle.label }}</label>
+                        <div class="col-sm-10">
+                            {{ form.libelle(class_="form-control libelle") }}
+                            {% for error in form.libelle.errors %}
+                                 <span style="color: red;">[{{ error }}]</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> {{ form.date_a.label }}</label>
+                        <div class="col-sm-10">
+                            {{ form.date_a(class_="form-control date_a datep") }}
+                            {% for error in form.date_a.errors %}
+                                 <span style="color: red;">[{{ error }}]</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> {{ form.date_b.label }} </label>
+                        <div class="col-sm-10">
+                            {{ form.date_b(class_="form-control date_b datep") }}
+                            {% for error in form.date_b.errors %}
+                                 <span style="color: red;">[{{ error }}]</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> {{ form.site.label }} </label>
+                        <div class="col-sm-10">
+                            {{ form.site(class_="form-control site") }}
+                            {% for error in form.site.errors %}
+                                 <span style="color: red;">[{{ error }}]</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> {{ form.departement.label }} </label>
+                        <div class="col-sm-10">
+                            {{ form.departement(class_="form-control departement") }}
+                            {% for error in form.departement.errors %}
+                                 <span style="color: red;">[{{ error }}]</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> {{ form.service.label }} </label>
+                        <div class="col-sm-10">
+                            {{ form.service(class_="form-control service") }}
+                            {% for error in form.service.errors %}
+                                 <span style="color: red;">[{{ error }}]</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> {{ form.etagere.label }} </label>
+                        <div class="col-sm-10">
+                            {{ form.etagere(class_="form-control etagere") }}
+                            {% for error in form.etagere.errors %}
+                                 <span style="color: red;">[{{ error }}]</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> {{ form.face.label }} </label>
+                        <div class="col-sm-10">
+                            {{ form.face(class_="form-control face") }}
+                            {% for error in form.face.errors %}
+                                 <span style="color: red;">[{{ error }}]</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> {{ form.epi.label }} </label>
+                        <div class="col-sm-10">
+                            {{ form.epi(class_="form-control epi") }}
+                            {% for error in form.epi.errors %}
+                                 <span style="color: red;">[{{ error }}]</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> {{ form.travee.label }} </label>
+                        <div class="col-sm-10">
+                            {{ form.travee(class_="form-control travee") }}
+                            {% for error in form.travee.errors %}
+                                 <span style="color: red;">[{{ error }}]</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> {{ form.tablette.label }} </label>
+                        <div class="col-sm-10">
+                            {{ form.tablette(class_="form-control tablette") }}
+                            {% for error in form.tablette.errors %}
+                                 <span style="color: red;">[{{ error }}]</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="form-group">
+                        <div class="col-md-2"></div>
+                        <div class="col-md-10">
+                            <button type="button" class="btn btn-primary btn-squared valider">Valider</button>
+                            <a href="{{ url_for('document.index_view') }}"
+                               class="btn btn-danger btn-squared">
+                                Annuler
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalCote" tabindex="-1" role="dialog" aria-labelledby="modalCoteLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-notify" role="document">
+            <div class="modal-content">
+                <div class="modal-header text-center">
+                    <h4 class="modal-title"> Cote générée </h4>
+                </div>
+                <!--Body-->
+                <div class="modal-body">
+                    <input class="form-control cote" id="cote" type="text" disabled>
+                    <br/>
+                </div>
+                <!--Footer-->
+                <div class="modal-footer flex-center">
+                    <button type="button" class="btn btn-success" id="enregistrer">Enregistrer document</button>
+                    <button type="button" class="btn btn-danger waves-effect" data-dismiss="modal">Annuler</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#liste-tab').click(function(){
+                location.href = Flask.url_for("document.index_view");
+            });
+
+            $('.valider').click(function(){
+                let site = $('.site').val();
+                let departement = $('.departement').val();
+                let service = $('.service').val();
+                if( $("#form_document").valid() ){
+                    $.getJSON($SCRIPT_ROOT + '/_generer_cote',{
+                        site: site,
+                        departement: departement,
+                        service: service
+                    },
+                    function(data) {
+                        $('#cote').val(data);
+                        $('#modalCote').modal();
+                    });
+                }
+            });
+
+            $("#form_document").validate({
+                   rules: {
+                     site: "required",
+                     departement: "required",
+                     libelle: "required",
+                     operateur: "required",
+                     etagere: "required",
+                     face: "required",
+                     epi: "required",
+                     travee: "required",
+                     tablette: "required",
+                     date_a: "required",
+                     date_b: "required"
+                   },
+                   messages: {
+                     site: "Ce champ est obligatoire",
+                     departement: "Ce champ est obligatoire",
+                     libelle: "Ce champ est obligatoire",
+                     operateur: "Ce champ est obligatoire",
+                     etagere: "Ce champ est obligatoire",
+                     face: "Ce champ est obligatoire",
+                     epi: "Ce champ est obligatoire",
+                     travee: "Ce champ est obligatoire",
+                     tablette: "Ce champ est obligatoire",
+                     date_a: "Ce champ est obligatoire",
+                     date_b: "Ce champ est obligatoire"
+                   }
+            });
+
+            $('#enregistrer').click(function(){
+                let operateur = $('.operateur').val();
+                let libelle = $('.libelle').val();
+                let date_a = $('.date_a').val();
+                let date_b = $('.date_b').val();
+                let site = $('.site').val();
+                let departement = $('.departement').val();
+                let service = $('.service').val();
+                let cote = $('#cote').val();
+                let etagere = $('#etagere').val();
+                let face = $('#face').val();
+                let epi = $('#epi').val();
+                let travee = $('#travee').val();
+                let tablette = $('#tablette').val();
+
+                $('#modalCote').modal('hide');
+
+                $.getJSON($SCRIPT_ROOT + '/_enregistrer_document',{
+                    operateur: operateur,
+                    libelle: libelle,
+                    date_a: date_a,
+                    date_b: date_b,
+                    site: site,
+                    departement: departement,
+                    service: service,
+                    cote: cote,
+                    etagere: etagere,
+                    face: face,
+                    epi: epi,
+                    travee: travee,
+                    tablette : tablette
+                },
+                function(data) {
+                    location.href = Flask.url_for("document.index_view");
+                });
+            });
+
+            $('.datep').daterangepicker({
+                singleDatePicker: true,
+                showDropdowns: true,
+                //minYear: 1901,
+                //maxYear: parseInt(moment().format('YYYY'),10)
+            });
+        });
+    </script>
+{% endblock body %}
+
